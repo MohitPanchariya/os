@@ -28,6 +28,7 @@ SECTIONS {
         */
         __bss = .;
         *(.bss .bss.* .sbss .sbss.*);
+        __bss_end = .;
     }
 
     . = ALIGN(4);

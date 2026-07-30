@@ -1,6 +1,23 @@
-extern char __stack_top[];
+extern char __stack_top[], __bss[], __bss_end[];
+
+typedef unsigned char uint8_t;
+typedef unsigned int uint32_t;
+typedef uint32_t size_t;
+
+
+void* memset(void* buf, char fill, size_t buf_size) {
+    uint8_t* p = (uint8_t* ) buf;
+    while(buf_size--) {
+        *p++ = fill;
+    }
+    return buf;
+}
+
 
 void kmain(void) {
+    // initialize the bss section with 0s
+    memset(__bss, 0, (size_t) __bss_end - (size_t) __bss);
+
     for (;;); // spin forever
 }
 
