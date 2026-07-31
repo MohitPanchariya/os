@@ -1,3 +1,5 @@
+#include "io.h"
+
 extern char __stack_top[], __bss[], __bss_end[];
 
 typedef unsigned char uint8_t;
@@ -18,6 +20,7 @@ void kmain(void) {
     // initialize the bss section with 0s
     memset(__bss, 0, (size_t) __bss_end - (size_t) __bss);
 
+    putchar('k');
     for (;;); // spin forever
 }
 
