@@ -13,12 +13,12 @@ SECTIONS {
         *(.text .text.*);
     }
 
-    .rodata :{
-        *(rodata rodata.*);
+    .rodata : ALIGN(4){
+        *(.rodata .rodata.*);
     }
 
     .data : ALIGN(4) {
-        *(data data.*);
+        *(.data .data.*);
     }
 
     .bss : ALIGN(4) {
