@@ -20,7 +20,7 @@ void kmain(void) {
     // initialize the bss section with 0s
     memset(__bss, 0, (size_t) __bss_end - (size_t) __bss);
 
-    putchar('k');
+    printf("Kernel says %s\n", "Hello!");
     for (;;); // spin forever
 }
 
