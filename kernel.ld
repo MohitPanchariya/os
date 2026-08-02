@@ -35,4 +35,9 @@ SECTIONS {
     . += 128 * 1024; /* 128KB */
     /* create a 128KB stack */
     __stack_top = .;
+
+    . = ALIGN(4096);
+    __heap_start = .;
+    . += 64 * 1024 * 1024; /* 64MB heap */
+    __heap_end = .;
 }
