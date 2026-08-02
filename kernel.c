@@ -55,7 +55,16 @@ void exception_handler(void) {
         "sw s10, 4 * 28(sp)\n"
         "sw s11, 4 * 29(sp)\n"
 
+        /*
+        The reason sscratch is read into a0, and then
+        written to 4 * 30(sp) is because the sw instruction
+        doesn't directly work with the sscratch register
+        sw sscratch, 4 * 30(sp) doesn't work
+        */
         "csrr a0, sscratch\n"
+        // the trap_frame's last member is the stack pointer
+        // store the original stack pointer at the end of the
+        // trap_frame
         "sw a0, 4 * 30(sp)\n"
 
         // copy stack pointer into a0 register
