@@ -2,6 +2,7 @@
 #include "types.h"
 #include "memory.h"
 #include "kernel.h"
+#include "process.h"
 
 extern char __stack_top[], __bss[], __bss_end[];
 
@@ -21,7 +22,10 @@ __attribute__((naked))
 __attribute__((aligned(4)))
 void exception_handler(void) {
     __asm__ __volatile__(
-        "csrw sscratch, sp\n" // save stack pointer to sscratch register
+        // swap sscratch and sp
+        // store kernel stack pointer in sp
+        // and contents of sp in sscratch
+        "csrrw sp, sscratch, sp\n" // save stack pointer to sscratch register
         "addi sp, sp, -4 * 31\n" // allocate space for the trap_frame struct
         // write out the general-purpose registers to stack
         "sw ra,  4 * 0(sp)\n"
@@ -67,6 +71,15 @@ void exception_handler(void) {
         // trap_frame
         "sw a0, 4 * 30(sp)\n"
 
+        // TODO: check if the following two instructions
+        // serve the smae purpose as the following 3 instrutions
+        // addi sp, sp, 4 * 31
+        // mv sp, a0
+
+        // reset the kernel stack pointer
+        "addi a0, sp, 4 * 31\n"
+        "csrw sscratch, a0\n"
+
         // copy stack pointer into a0 register
         // a0 holds the first parameter for a
         // function being called
@@ -111,16 +124,51 @@ void exception_handler(void) {
     );
 }
 
+
+void delay(void) {
+    for(int i = 0; i < 30000000; i++) {
+        __asm__ __volatile__("nop");
+    }
+}
+
+struct process* proc_a;
+struct process* proc_b;
+
+void proc_a_entry(void) {
+    printf("starting process A\n");
+    while (1) {
+        putchar('A');
+        yield();
+    }
+}
+
+void proc_b_entry(void) {
+    printf("starting process B\n");
+    while (1) {
+        putchar('B');
+        yield();
+    }
+}
+
 void kmain(void) {
     // initialize the bss section with 0s
     memset(__bss, 0, (size_t) __bss_end - (size_t) __bss);
 
     // setup exception handler
-    // in riscv32, stvec stores the address of the exception
+    // In riscv32, stvec stores the address of the exception
     // handler for U/S mode exceptions
     WRITE_CSR(stvec, (uint32_t) exception_handler);
 
     printf("Kernel says %s\n", "Hello!");
+
+    proc_init();
+
+    proc_a = create_process((uint32_t) proc_a_entry);
+    proc_b = create_process((uint32_t) proc_b_entry);
+
+    yield();
+    PANIC("Returned to idle process");
+
     for (;;); // spin forever
 }
 
