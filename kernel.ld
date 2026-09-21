@@ -37,7 +37,7 @@ SECTIONS {
     __stack_top = .;
 
     . = ALIGN(4096);
-    __heap_start = .;
-    . += 64 * 1024 * 1024; /* 64MB heap */
-    __heap_end = .;
+    __free_ram = .;
+    . += 64 * 1024 * 1024; /* 64MB RAM */
+    __free_ram_end = .;
 }
