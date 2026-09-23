@@ -12,6 +12,8 @@ struct process {
     int state;
     // pointer to kernel stack
     vaddr_t sp;
+    // pointer to page table
+    uint32_t* pg_table;
     // kernel stack
     uint8_t stack[8192];
 };

@@ -6,6 +6,7 @@ ENTRY(boot)
 SECTIONS {
     /* base address */
     . = 0x80200000;
+    __kernel_base = .;
 
     .text :{
         /* .text.boot is at the top in text section */

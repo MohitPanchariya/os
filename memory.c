@@ -2,8 +2,6 @@
 #include "types.h"
 #include "kernel.h"
 
-#define PAGE_SIZE 4096
-
 extern char __free_ram[], __free_ram_end[];
 
 void* memset(void* buf, char fill, size_t buf_size) {
@@ -40,4 +38,28 @@ paddr_t allocate_pages(uint32_t n) {
     // memset((void*) start, 0, n * PAGE_SIZE);
 
     return start;
+}
+
+// map a virtual address to a physical address
+void map_page(uint32_t* pg_table1, uint32_t vaddr, paddr_t paddr, uint32_t flags) {
+    if (!is_aligned(vaddr, PAGE_SIZE))
+        PANIC("unaligned vaddr %x", vaddr);
+
+    if (!is_aligned(paddr, PAGE_SIZE))
+        PANIC("unaligned paddr %x", paddr);
+
+    // based on the SV32 paging schema
+    uint32_t vpn1 = (uint32_t) ((vaddr >> 22) & 0x3ff);
+    
+    // create the first level page table entry
+    if((pg_table1[vpn1] & PAGE_V) == 0) {
+        uint32_t pt_addr = allocate_pages(1);
+        // PPNs (physical page number) are stored in page tables
+        pg_table1[vpn1] = ((pt_addr / PAGE_SIZE) << 10) | PAGE_V;
+    }
+
+    uint32_t vpn0 = (uint32_t) ((vaddr >> 12) & 0x3ff);
+    // start of the second level page table
+    uint32_t* pg_table0 = (uint32_t*) ((pg_table1[vpn1] >> 10) * PAGE_SIZE);
+    pg_table0[vpn0] = (uint32_t) ((paddr / PAGE_SIZE) << 10) | flags | PAGE_V;
 }
