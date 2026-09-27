@@ -34,8 +34,7 @@ paddr_t allocate_pages(uint32_t n) {
         PANIC("OUT OF MEMORY");
     }
 
-    // uncomment to debug memory issues
-    // memset((void*) start, 0, n * PAGE_SIZE);
+    memset((void*) start, 0, n * PAGE_SIZE);
 
     return start;
 }
