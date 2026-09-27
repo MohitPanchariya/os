@@ -3,9 +3,14 @@
 #include "memory.h"
 #include "kernel.h"
 #include "process.h"
+#include "sbi.h"
 
 extern char __stack_top[], __bss[], __bss_end[];
 
+void putchar(char ch) {
+    // calls Console Putchar exposed by OpenSBI
+    sbi_call(ch, 0, 0, 0, 0, 0, 0, 1);
+}
 
 void handle_trap(struct trap_frame* f) {
     // cause of crash

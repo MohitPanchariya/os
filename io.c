@@ -2,10 +2,7 @@
 #include "io.h"
 #include "args.h"
 
-void putchar(char ch) {
-    // calls Console Putchar exposed by OpenSBI
-    sbi_call(ch, 0, 0, 0, 0, 0, 0, 1);
-}
+void putchar(char ch);
 
 void printf(const char *fmt, ...) {
     va_list vargs;
