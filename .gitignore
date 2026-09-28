@@ -3,3 +3,4 @@
 *.bin
 
 kernel.map
+shell.map
