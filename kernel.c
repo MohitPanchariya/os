@@ -6,6 +6,7 @@
 #include "sbi.h"
 
 extern char __stack_top[], __bss[], __bss_end[];
+extern char _binary_shell_bin_start[], _binary_shell_bin_size[];
 
 void putchar(char ch) {
     // calls Console Putchar exposed by OpenSBI
@@ -168,8 +169,8 @@ void kmain(void) {
 
     proc_init();
 
-    proc_a = create_process((uint32_t) proc_a_entry);
-    proc_b = create_process((uint32_t) proc_b_entry);
+    // start the shell, the first userspace process
+    create_process(_binary_shell_bin_start, (size_t) _binary_shell_bin_size);
 
     yield();
     PANIC("Returned to idle process");
