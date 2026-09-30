@@ -4,6 +4,7 @@
 #include "kernel.h"
 #include "process.h"
 #include "sbi.h"
+#include "syscall.h"
 
 extern char __stack_top[], __bss[], __bss_end[];
 extern char _binary_shell_bin_start[], _binary_shell_bin_size[];
@@ -21,7 +22,26 @@ void handle_trap(struct trap_frame* f) {
     // pc pointing to the point that caused the crash
     uint32_t user_pc = READ_CSR(sepc);
 
-    PANIC("trap triggered. scause=%x, stval=%x, sepc=%x\n", scause, stval, user_pc);
+    if (scause == SCAUSE_ECALL) {
+        handle_syscall(f);
+        // move the PC by 4 bytes, pointing to the instruction after ecall
+        user_pc += 4;
+    } else {
+        PANIC("trap triggered. scause=%x, stval=%x, sepc=%x\n", scause, stval, user_pc);
+    }
+    WRITE_CSR(sepc, user_pc);
+}
+
+void handle_syscall(struct trap_frame* f) {
+    switch (f->a3)
+    {
+    case SYS_PUTCHAR:
+        putchar(f->a0);
+        break;
+    default:
+        PANIC("unexpected syscall a3=%x\n", f->a3);
+        break;
+    }
 }
 
 __attribute__((naked))

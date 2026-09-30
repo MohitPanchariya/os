@@ -56,3 +56,8 @@ struct trap_frame {
         uint32_t __tmp = (value);                                              \
         __asm__ __volatile__("csrw " #reg ", %0" ::"r"(__tmp));                \
     } while (0)
+
+
+#define SCAUSE_ECALL 8
+
+void handle_syscall(struct trap_frame* f);
