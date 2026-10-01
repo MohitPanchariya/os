@@ -4,5 +4,6 @@
 
 __attribute__((noreturn)) void exit(void);
 void putchar(char ch);
+int getchar(void);
 
 int syscall(int syscallno, int arg0, int arg1, int arg2);

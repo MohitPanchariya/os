@@ -14,6 +14,12 @@ void putchar(char ch) {
     sbi_call(ch, 0, 0, 0, 0, 0, 0, 1);
 }
 
+long getchar(void) {
+    // OpenSBI has a driver to read input from a serial connection
+    struct sbi_ret ret = sbi_call(0, 0, 0, 0, 0, 0, 0, 2);
+    return ret.error;
+}
+
 void handle_trap(struct trap_frame* f) {
     // cause of crash
     uint32_t scause = READ_CSR(scause);
@@ -37,6 +43,18 @@ void handle_syscall(struct trap_frame* f) {
     {
     case SYS_PUTCHAR:
         putchar(f->a0);
+        break;
+    case SYS_GETCHAR:
+        while(1) {
+            long ch = getchar();
+            if (ch >= 0) {
+                f->a0 = ch;
+                break;
+            }
+            // yield the CPU to other processes instead of
+            // waiting for a new character all the time
+            yield();
+        }
         break;
     default:
         PANIC("unexpected syscall a3=%x\n", f->a3);

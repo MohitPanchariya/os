@@ -8,6 +8,10 @@ void putchar(char ch) {
     return;
 }
 
+int getchar(void) {
+    syscall(SYS_GETCHAR, 0, 0, 0);
+}
+
 __attribute__((noreturn)) void exit(void) {
     for(;;);
 }

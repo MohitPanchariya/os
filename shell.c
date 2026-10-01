@@ -1,5 +1,30 @@
 #include "user.h"
+#include "string.h"
 
 void main(void) {
-    printf("Hello, World\n");
+    while (1) {
+prompt:
+        printf("$ ");
+        char cmdline[128];
+        for (int i = 0;; i++) {
+            char ch = getchar();
+            // echo back input to the shell
+            putchar(ch);
+            if (i == sizeof(cmdline) - 1) {
+                printf("command line too long\n");
+                goto prompt;
+            } else if (ch == '\r') {
+                printf("\n");
+                cmdline[i] = '\0';
+                break;
+            } else {
+                cmdline[i] = ch;
+            }
+        }
+
+        if (strcmp(cmdline, "hello") == 0)
+            printf("Hello from the shell!\n");
+        else
+            printf("unknown command: %s\n", cmdline);
+    }
 }
