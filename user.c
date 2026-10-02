@@ -13,6 +13,7 @@ int getchar(void) {
 }
 
 __attribute__((noreturn)) void exit(void) {
+    syscall(SYS_EXIT, 0, 0, 0);
     for(;;);
 }
 

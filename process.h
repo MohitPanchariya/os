@@ -5,6 +5,7 @@
 #define MAX_PROCS 8
 #define PROC_UNUSED 0
 #define PROC_RUNNABLE 1
+#define PROC_EXITED 2
 
 // base virtual address of application binary.
 // matches the start address in the user linker script
@@ -24,6 +25,11 @@ struct process {
     // kernel stack
     uint8_t stack[8192];
 };
+
+// currently running process
+extern struct process* current_proc;
+// process to switch to, if there are no runnable processes
+extern struct process* idle_proc;
 
 void switch_context(uint32_t* prev_sp, uint32_t* next_sp);
 struct process* create_process(const void* image, size_t image_size);

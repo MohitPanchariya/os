@@ -22,9 +22,14 @@ prompt:
             }
         }
 
-        if (strcmp(cmdline, "hello") == 0)
+        if (strcmp(cmdline, "hello") == 0) {
             printf("Hello from the shell!\n");
-        else
+        } else if(strcmp(cmdline, "exit") == 0) {
+            printf("bye!"); 
+            exit();
+        }
+        else {
             printf("unknown command: %s\n", cmdline);
+        }
     }
 }
