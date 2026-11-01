@@ -17,4 +17,4 @@ $OBJCOPY -Ibinary -Oelf32-littleriscv shell.bin shell.bin.o
 # kernel
 $CC $CFLAGS -Wl,-TKernel.ld -Wl,-Map=kernel.map -o kernel.elf kernel.c io.c sbi.c memory.c string.c process.c shell.bin.o
 
-$QEMU -machine virt -bios default -nographic -serial mon:stdio --no-reboot -kernel kernel.elf
+$QEMU -machine virt -bios default -nographic -serial mon:stdio --no-reboot -kernel kernel.elf -drive id=drive0,file=disk.img,format=raw,if=none -device virtio-blk-device,drive=drive0,bus=virtio-mmio-bus.0
